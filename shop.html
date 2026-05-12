@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop | Meheli Artwork</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-50">
+
+    <nav class="glass sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold font-premium gold-gradient">MEHELI ARTWORK</a>
+            <div class="flex space-x-8">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="shop.html" class="nav-link text-amber-500">Shop</a>
+                <a href="user-panel.html" id="user-dash-link" class="nav-link hidden">Dashboard</a>
+                <a href="auth.html" id="login-link" class="nav-link">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="text-center mb-16">
+            <h1 class="text-5xl font-bold mb-4">Graphic Catalog</h1>
+            <p class="text-slate-400">Exclusive designs for professional brands.</p>
+        </div>
+
+        <!-- Catalog -->
+        <div id="shop-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Artworks populated by JS -->
+        </div>
+    </main>
+
+    <!-- Purchase Modal -->
+    <div id="buy-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[100] p-6 backdrop-blur-xl">
+        <div class="glass max-w-4xl w-full rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-2xl border border-amber-500/20">
+            <div class="md:w-1/2">
+                <img id="buy-img" src="" class="w-full h-full object-cover">
+            </div>
+            <div class="md:w-1/2 p-10 flex flex-col justify-center">
+                <h2 id="buy-title" class="text-4xl font-bold mb-2"></h2>
+                <p id="buy-desc" class="text-slate-400 mb-6"></p>
+                <div class="text-3xl font-bold text-amber-500 mb-8" id="buy-price"></div>
+                
+                <div id="buy-actions" class="space-y-4">
+                    <button onclick="confirmPurchase()" class="w-full btn-primary py-4 text-xl">Confirm & Buy Now</button>
+                    <button onclick="closeBuyModal()" class="w-full text-slate-500 hover:text-slate-300">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/db.js"></script>
+    <script>
+        lucide.createIcons();
+        let selectedArt = null;
+
+        function checkSession() {
+            const user = DB.getCurrentUser();
+            if (user) {
+                document.getElementById('login-link').classList.add('hidden');
+                document.getElementById('user-dash-link').classList.remove('hidden');
+            }
+        }
+
+        function renderShop() {
+            const container = document.getElementById('shop-container');
+            const arts = DB.getArtworks();
+            
+            if (arts.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-20 text-slate-500">No graphics available yet. Check back later!</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            arts.forEach(art => {
+                container.innerHTML += `
+                    <div class="glass rounded-2xl overflow-hidden card-hover group border border-slate-800">
+                        <div class="relative overflow-hidden h-64">
+                            <img src="${art.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <button onclick="openBuyModal('${art.id}')" class="bg-amber-500 text-slate-900 px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform">View Details</button>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2">${art.title}</h3>
+                            <p class="text-amber-500 font-bold">Rs. ${art.price}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openBuyModal(id) {
+            const user = DB.getCurrentUser();
+            if (!user) {
+                alert('Please login to purchase artworks!');
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            selectedArt = DB.getArtworks().find(a => a.id === id);
+            document.getElementById('buy-img').src = selectedArt.image;
+            document.getElementById('buy-title').innerText = selectedArt.title;
+            document.getElementById('buy-desc').innerText = selectedArt.description;
+            document.getElementById('buy-price').innerText = `Rs. ${selectedArt.price}`;
+            
+            document.getElementById('buy-modal').classList.remove('hidden');
+            document.getElementById('buy-modal').classList.add('flex');
+        }
+
+        function closeBuyModal() {
+            document.getElementById('buy-modal').classList.add('hidden');
+            document.getElementById('buy-modal').classList.remove('flex');
+        }
+
+        function confirmPurchase() {
+            const user = DB.getCurrentUser();
+            const order = {
+                id: 'ord_' + Date.now(),
+                artId: selectedArt.id,
+                userId: user.id,
+                userName: user.username,
+                userEmail: user.email,
+                price: selectedArt.price,
+                date: new Date().toLocaleDateString()
+            };
+
+            DB.addOrder(order);
+
+            // Simulation of Email
+            const emailBody = `Order Details:\n\nGraphic: ${selectedArt.title}\nPrice: Rs. ${selectedArt.price}\nCustomer: ${user.username}\nEmail: ${user.email}`;
+            const mailtoLink = `mailto:meheliartwork@gmail.com?subject=New Order - ${selectedArt.title}&body=${encodeURIComponent(emailBody)}`;
+            
+            alert('Order placed successfully! Redirecting to dashboard...');
+            window.open(mailtoLink, '_blank'); // Opens mail client
+            window.location.href = 'user-panel.html';
+        }
+
+        checkSession();
+        renderShop();
+    </script>
+</body>
+</html>

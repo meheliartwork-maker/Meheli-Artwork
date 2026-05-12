@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Meheli Artwork</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 min-h-screen glass border-r border-slate-800 p-6 flex flex-col fixed">
+        <h2 class="text-xl font-bold gold-gradient mb-10">CHAMU PANEL</h2>
+        
+        <nav class="flex-1 space-y-4">
+            <button onclick="showTab('artworks')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 flex items-center space-x-3 transition-all" id="btn-artworks">
+                <i data-lucide="palette"></i> <span>Artworks</span>
+            </button>
+            <button onclick="showTab('orders')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 flex items-center space-x-3 transition-all" id="btn-orders">
+                <i data-lucide="shopping-cart"></i> <span>Orders</span>
+            </button>
+            <button onclick="showTab('chat')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 flex items-center space-x-3 transition-all" id="btn-chat">
+                <i data-lucide="message-circle"></i> <span>Messages</span>
+            </button>
+        </nav>
+
+        <button onclick="logout()" class="p-3 text-red-400 flex items-center space-x-3 hover:bg-red-500/10 rounded-lg transition-all">
+            <i data-lucide="log-out"></i> <span>Logout</span>
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 p-10">
+        
+        <!-- Artworks Tab -->
+        <section id="tab-artworks" class="tab-content">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold">Manage Artworks</h1>
+                <button onclick="openModal('add')" class="btn-primary flex items-center space-x-2">
+                    <i data-lucide="plus"></i> <span>Add New Art</span>
+                </button>
+            </div>
+
+            <div id="artworks-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Artworks populated by JS -->
+            </div>
+        </section>
+
+        <!-- Orders Tab -->
+        <section id="tab-orders" class="tab-content hidden">
+            <h1 class="text-3xl font-bold mb-8">Customer Orders</h1>
+            <div class="glass rounded-xl overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-800/50">
+                        <tr>
+                            <th class="p-4">Graphic</th>
+                            <th class="p-4">Customer</th>
+                            <th class="p-4">Price</th>
+                            <th class="p-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-list">
+                        <!-- Orders populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Chat Tab -->
+        <section id="tab-chat" class="tab-content hidden">
+            <h1 class="text-3xl font-bold mb-8">Customer Chats</h1>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-[70vh]">
+                <div class="glass rounded-xl p-4 overflow-y-auto" id="user-list">
+                    <!-- List of users who have chatted -->
+                </div>
+                <div class="md:col-span-2 glass rounded-xl flex flex-col">
+                    <div class="p-4 border-b border-slate-700 font-bold" id="chat-header">Select a customer</div>
+                    <div class="flex-1 p-4 overflow-y-auto space-y-4" id="chat-messages"></div>
+                    <div class="p-4 border-t border-slate-700 flex space-x-2">
+                        <input type="text" id="chat-input" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4" placeholder="Type a message...">
+                        <button onclick="sendChatMessage()" class="btn-primary">Send</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Adding/Editing -->
+    <div id="art-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[100] backdrop-blur-sm">
+        <div class="glass p-8 rounded-2xl w-full max-w-lg shadow-2xl">
+            <h2 id="modal-title" class="text-2xl font-bold mb-6">Add New Graphic</h2>
+            <form id="art-form" class="space-y-4">
+                <input type="hidden" id="art-id">
+                <div>
+                    <label class="block text-sm mb-1">Title</label>
+                    <input type="text" id="art-title" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2" required>
+                </div>
+                <div>
+                    <label class="block text-sm mb-1">Price (Rs)</label>
+                    <input type="number" id="art-price" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2" required>
+                </div>
+                <div>
+                    <label class="block text-sm mb-1">Description</label>
+                    <textarea id="art-desc" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2" rows="3" required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm mb-1">Upload Graphic</label>
+                    <input type="file" id="art-file" accept="image/*" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2">
+                    <img id="art-preview" src="" class="mt-2 h-32 hidden rounded-lg object-cover">
+                </div>
+                <div class="flex justify-end space-x-4 pt-4">
+                    <button type="button" onclick="closeModal()" class="px-6 py-2">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Artwork</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/db.js"></script>
+    <script>
+        lucide.createIcons();
+        let currentChatUser = null;
+
+        // Security Check
+        const user = DB.getCurrentUser();
+        if (!user || user.role !== 'admin') {
+            window.location.href = 'auth.html';
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            
+            if (tab === 'artworks') renderArtworks();
+            if (tab === 'orders') renderOrders();
+            if (tab === 'chat') renderChatUsers();
+        }
+
+        function openModal(mode, id = null) {
+            const modal = document.getElementById('art-modal');
+            const title = document.getElementById('modal-title');
+            const form = document.getElementById('art-form');
+            form.reset();
+            document.getElementById('art-preview').classList.add('hidden');
+
+            if (mode === 'edit') {
+                title.innerText = 'Edit Artwork';
+                const art = DB.getArtworks().find(a => a.id === id);
+                document.getElementById('art-id').value = art.id;
+                document.getElementById('art-title').value = art.title;
+                document.getElementById('art-price').value = art.price;
+                document.getElementById('art-desc').value = art.description;
+                if (art.image) {
+                    document.getElementById('art-preview').src = art.image;
+                    document.getElementById('art-preview').classList.remove('hidden');
+                }
+            } else {
+                title.innerText = 'Add New Graphic';
+                document.getElementById('art-id').value = '';
+            }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('art-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Image Preview
+        document.getElementById('art-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('art-preview').src = event.target.result;
+                    document.getElementById('art-preview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Save Artwork
+        document.getElementById('art-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('art-id').value || 'art_' + Date.now();
+            const title = document.getElementById('art-title').value;
+            const price = document.getElementById('art-price').value;
+            const desc = document.getElementById('art-desc').value;
+            const image = document.getElementById('art-preview').src;
+
+            DB.saveArtwork({ id, title, price, description: desc, image });
+            closeModal();
+            renderArtworks();
+        });
+
+        function renderArtworks() {
+            const container = document.getElementById('artworks-list');
+            container.innerHTML = '';
+            DB.getArtworks().forEach(art => {
+                container.innerHTML += `
+                    <div class="glass p-4 rounded-xl border border-slate-800">
+                        <img src="${art.image}" class="w-full h-48 object-cover rounded-lg mb-4">
+                        <h3 class="text-xl font-bold">${art.title}</h3>
+                        <p class="text-amber-500 font-bold mb-2">Rs. ${art.price}</p>
+                        <div class="flex space-x-2">
+                            <button onclick="openModal('edit', '${art.id}')" class="flex-1 bg-slate-800 py-2 rounded-lg hover:bg-slate-700">Edit</button>
+                            <button onclick="deleteArt('${art.id}')" class="bg-red-500/20 text-red-400 p-2 rounded-lg hover:bg-red-500 hover:text-white transition-all"><i data-lucide="trash-2"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function deleteArt(id) {
+            if (confirm('Delete this artwork?')) {
+                DB.deleteArtwork(id);
+                renderArtworks();
+            }
+        }
+
+        function renderOrders() {
+            const list = document.getElementById('orders-list');
+            list.innerHTML = '';
+            DB.getOrders().reverse().forEach(order => {
+                const art = DB.getArtworks().find(a => a.id === order.artId);
+                list.innerHTML += `
+                    <tr class="border-b border-slate-800">
+                        <td class="p-4 flex items-center space-x-3">
+                            <img src="${art?.image}" class="w-12 h-12 rounded object-cover">
+                            <span>${art?.title}</span>
+                        </td>
+                        <td class="p-4">${order.userName} (${order.userEmail})</td>
+                        <td class="p-4 font-bold">Rs. ${order.price}</td>
+                        <td class="p-4"><span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs">Paid</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Chat Logic
+        function renderChatUsers() {
+            const container = document.getElementById('user-list');
+            const messages = DB.getMessages();
+            const uniqueUsers = [...new Set(messages.map(m => m.from === 'admin' ? m.to : m.from))];
+            
+            container.innerHTML = '<h3 class="text-slate-400 text-sm mb-4">Active Chats</h3>';
+            uniqueUsers.forEach(userId => {
+                const user = DB.getUsers().find(u => u.id === userId);
+                if (!user) return;
+                container.innerHTML += `
+                    <button onclick="openChat('${user.id}', '${user.username}')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 mb-2 transition-all">
+                        <p class="font-bold">${user.username}</p>
+                        <p class="text-xs text-slate-500">${user.email}</p>
+                    </button>
+                `;
+            });
+        }
+
+        function openChat(userId, username) {
+            currentChatUser = userId;
+            document.getElementById('chat-header').innerText = `Chat with ${username}`;
+            renderMessages();
+        }
+
+        function renderMessages() {
+            if (!currentChatUser) return;
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = '';
+            DB.getMessages().filter(m => m.from === currentChatUser || m.to === currentChatUser).forEach(m => {
+                const isAdmin = m.from === 'admin';
+                container.innerHTML += `
+                    <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'}">
+                        <div class="${isAdmin ? 'bg-amber-500 text-slate-900' : 'bg-slate-800 text-slate-100'} p-3 rounded-2xl max-w-[80%] shadow-lg">
+                            <p>${m.text}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (text && currentChatUser) {
+                DB.sendMessage({ from: 'admin', to: currentChatUser, text, time: Date.now() });
+                input.value = '';
+                renderMessages();
+            }
+        }
+
+        function logout() {
+            DB.logout();
+            window.location.href = 'index.html';
+        }
+
+        showTab('artworks');
+    </script>
+</body>
+</html>

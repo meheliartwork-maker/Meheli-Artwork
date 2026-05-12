@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meheli Artwork | Premium Graphic Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+</head>
+<body class="bg-slate-950 text-slate-50">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold font-premium gold-gradient">MEHELI ARTWORK</a>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="shop.html" class="nav-link">Shop</a>
+                <a href="auth.html" id="nav-auth-link" class="nav-link">Login</a>
+                <div id="user-nav" class="hidden flex items-center space-x-4">
+                    <a href="user-panel.html" class="nav-link">Dashboard</a>
+                    <button onclick="logout()" class="text-red-400 hover:text-red-300">Logout</button>
+                </div>
+                <div id="admin-nav" class="hidden flex items-center space-x-4">
+                    <a href="admin.html" class="nav-link">Admin Panel</a>
+                    <button onclick="logout()" class="text-red-400 hover:text-red-300">Logout</button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="md:hidden text-slate-300" onclick="toggleMenu()">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex items-center pt-20 overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] animate-pulse"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] animate-pulse"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10 grid md:grid-cols-2 gap-12 items-center">
+            <div class="animate__animated animate__fadeInLeft">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                    Elevate Your Brand With <span class="gold-gradient">Masterpiece</span> Graphics
+                </h1>
+                <p class="text-lg text-slate-400 mb-8 max-w-lg">
+                    Premium logos, illustrations, and digital art tailored for your success. Unique designs, professional quality, and fast delivery.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="shop.html" class="btn-primary flex items-center space-x-2">
+                        <span>Explore Shop</span>
+                        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                    </a>
+                    <a href="#about" class="px-6 py-3 rounded-lg border border-slate-700 hover:bg-slate-800 transition-all">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+            
+            <div class="relative animate__animated animate__fadeInRight">
+                <div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl border border-slate-800">
+                    <img id="hero-image" src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1000" alt="Graphic Design Demo" class="w-full h-auto">
+                </div>
+                <!-- Floating Elements -->
+                <div class="absolute -top-6 -right-6 glass p-4 rounded-xl border border-amber-500/30 animate-bounce">
+                    <i data-lucide="award" class="text-amber-500 w-8 h-8"></i>
+                </div>
+                <div class="absolute -bottom-6 -left-6 glass p-4 rounded-xl border border-amber-500/30">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span class="text-xs font-semibold">Live Orders</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Featured Section -->
+    <section class="py-24 bg-slate-900/50" id="about">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">Why Choose Meheli?</h2>
+                <div class="h-1.5 w-24 gold-bg-gradient mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass p-8 rounded-2xl card-hover">
+                    <div class="w-14 h-14 rounded-xl bg-amber-500/10 flex items-center justify-center mb-6">
+                        <i data-lucide="palette" class="text-amber-500 w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Custom Art</h3>
+                    <p class="text-slate-400">Every design is created from scratch to match your specific vision and brand identity.</p>
+                </div>
+                <div class="glass p-8 rounded-2xl card-hover">
+                    <div class="w-14 h-14 rounded-xl bg-amber-500/10 flex items-center justify-center mb-6">
+                        <i data-lucide="zap" class="text-amber-500 w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Fast Delivery</h3>
+                    <p class="text-slate-400">We value your time. Get your high-quality graphic files delivered within the promised deadline.</p>
+                </div>
+                <div class="glass p-8 rounded-2xl card-hover">
+                    <div class="w-14 h-14 rounded-xl bg-amber-500/10 flex items-center justify-center mb-6">
+                        <i data-lucide="message-square" class="text-amber-500 w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Direct Chat</h3>
+                    <p class="text-slate-400">Communicate directly with our lead designer Chamu to refine your requirements.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-slate-800">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-2xl font-bold gold-gradient mb-6">MEHELI ARTWORK</h2>
+            <div class="flex justify-center space-x-6 mb-8">
+                <a href="#" class="text-slate-400 hover:text-amber-400"><i data-lucide="facebook"></i></a>
+                <a href="#" class="text-slate-400 hover:text-amber-400"><i data-lucide="instagram"></i></a>
+                <a href="#" class="text-slate-400 hover:text-amber-400"><i data-lucide="twitter"></i></a>
+            </div>
+            <p class="text-slate-500">© 2026 Meheli Artwork. Created with ❤️ for Graphic Lovers.</p>
+        </div>
+    </footer>
+
+    <script src="js/db.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // Session Management
+        function updateNav() {
+            const user = DB.getCurrentUser();
+            const authLink = document.getElementById('nav-auth-link');
+            const userNav = document.getElementById('user-nav');
+            const adminNav = document.getElementById('admin-nav');
+
+            if (user) {
+                authLink.classList.add('hidden');
+                if (user.role === 'admin') {
+                    adminNav.classList.remove('hidden');
+                } else {
+                    userNav.classList.remove('hidden');
+                }
+            } else {
+                authLink.classList.remove('hidden');
+                userNav.classList.add('hidden');
+                adminNav.classList.add('hidden');
+            }
+        }
+
+        function logout() {
+            DB.logout();
+            window.location.reload();
+        }
+
+        updateNav();
+    </script>
+</body>
+</html>

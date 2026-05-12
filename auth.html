@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth | Meheli Artwork</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 flex items-center justify-center min-h-screen">
+
+    <div class="container mx-auto px-6">
+        <div class="max-w-md mx-auto glass p-8 rounded-2xl shadow-2xl animate-fade-in">
+            <div class="text-center mb-8">
+                <a href="index.html" class="text-3xl font-bold gold-gradient">MEHELI ARTWORK</a>
+                <p id="auth-title" class="text-slate-400 mt-2">Welcome Back! Login to your account.</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Username</label>
+                    <input type="text" id="login-username" class="w-full bg-slate-800 border border-slate-700 rounded-lg py-3 px-4 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Password</label>
+                    <input type="password" id="login-password" class="w-full bg-slate-800 border border-slate-700 rounded-lg py-3 px-4 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all" required>
+                </div>
+                <button type="submit" class="w-full btn-primary">Login Now</button>
+                <p class="text-center text-slate-400">Don't have an account? <a href="#" onclick="toggleAuth(false)" class="text-amber-500 hover:underline">Register</a></p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="space-y-6 hidden">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Username</label>
+                    <input type="text" id="reg-username" class="w-full bg-slate-800 border border-slate-700 rounded-lg py-3 px-4 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Email Address</label>
+                    <input type="email" id="reg-email" class="w-full bg-slate-800 border border-slate-700 rounded-lg py-3 px-4 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Password</label>
+                    <input type="password" id="reg-password" class="w-full bg-slate-800 border border-slate-700 rounded-lg py-3 px-4 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all" required>
+                </div>
+                <button type="submit" class="w-full btn-primary">Create Account</button>
+                <p class="text-center text-slate-400">Already have an account? <a href="#" onclick="toggleAuth(true)" class="text-amber-500 hover:underline">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/db.js"></script>
+    <script>
+        function toggleAuth(isLogin) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const title = document.getElementById('auth-title');
+
+            if (isLogin) {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                title.innerText = "Welcome Back! Login to your account.";
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                title.innerText = "Join Us! Create your account today.";
+            }
+        }
+
+        // Handle Login
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('login-username').value;
+            const pass = document.getElementById('login-password').value;
+
+            const users = DB.getUsers();
+            const foundUser = users.find(u => u.username === user && u.password === pass);
+
+            if (foundUser) {
+                DB.login(foundUser);
+                if (foundUser.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'shop.html';
+                }
+            } else {
+                alert('Invalid username or password!');
+            }
+        });
+
+        // Handle Registration
+        document.getElementById('register-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('reg-username').value;
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-password').value;
+
+            const users = DB.getUsers();
+            if (users.find(u => u.username === user)) {
+                alert('Username already exists!');
+                return;
+            }
+
+            const newUser = {
+                id: 'user_' + Date.now(),
+                username: user,
+                email: email,
+                password: pass,
+                role: 'user'
+            };
+
+            DB.saveUser(newUser);
+            DB.login(newUser);
+            alert('Account created successfully!');
+            window.location.href = 'shop.html';
+        });
+    </script>
+</body>
+</html>
